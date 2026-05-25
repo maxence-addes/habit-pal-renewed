@@ -316,7 +316,14 @@ function Index() {
                 </span>
               </div>
               <button
-                onClick={() => setStudentMode((s) => !s)}
+                onClick={() => {
+                  // First time entering "élève" mode → run the quiz
+                  if (!studentMode && onboarded === false) {
+                    navigate({ to: "/onboarding", search: { role: "student" } });
+                    return;
+                  }
+                  setStudentMode((s) => !s);
+                }}
                 aria-label={studentMode ? "Quitter l'espace élève" : "Passer en espace élève"}
                 className="relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background bg-muted ring-1 ring-border"
               >
