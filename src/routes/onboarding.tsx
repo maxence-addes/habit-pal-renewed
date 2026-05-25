@@ -279,7 +279,7 @@ function OnboardingPage() {
         </div>
 
         <div className="bg-card ring-1 ring-border rounded-2xl p-6 transition-all">
-          {step > 1 && (
+          {step > minStep && (
             <button
               onClick={goBack}
               disabled={busy}
