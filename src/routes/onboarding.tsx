@@ -69,10 +69,12 @@ function generateCodeFallback() {
 function OnboardingPage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { role: presetRole } = Route.useSearch();
 
-  // Wizard state
-  const [step, setStep] = useState(1);
-  const [role, setRole] = useState<Role | null>(null);
+  // Wizard state — if a role was passed in the URL, skip step 1 entirely
+  const [step, setStep] = useState(presetRole ? 2 : 1);
+  const [role, setRole] = useState<Role | null>(presetRole ?? null);
+  const minStep = presetRole ? 2 : 1;
 
   // Student
   const [grade, setGrade] = useState<string>("");
