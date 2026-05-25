@@ -95,6 +95,8 @@ function Index() {
   const [newDates, setNewDates] = useState<Date[]>([]);
   const [newDueDate, setNewDueDate] = useState<Date | undefined>(undefined);
 
+  const [onboarded, setOnboarded] = useState<boolean | null>(null);
+
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
@@ -103,17 +105,15 @@ function Index() {
     }
     let cancelled = false;
     (async () => {
-      // First, ensure the user has completed onboarding
+      // Check onboarding status (no longer redirects automatically — the
+      // quiz only runs the first time the user enters "élève" mode)
       const { data: profile } = await supabase
         .from("profiles")
         .select("onboarded_at")
         .eq("id", user.id)
         .maybeSingle();
       if (cancelled) return;
-      if (!profile?.onboarded_at) {
-        navigate({ to: "/onboarding" });
-        return;
-      }
+      setOnboarded(Boolean(profile?.onboarded_at));
 
       const { data, error } = await supabase
         .from("habits")
