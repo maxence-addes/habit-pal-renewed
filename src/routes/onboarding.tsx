@@ -6,6 +6,11 @@ import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/onboarding")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    role: (search.role === "student" || search.role === "parent")
+      ? (search.role as "student" | "parent")
+      : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Bienvenue — Daily Rhythms" },
