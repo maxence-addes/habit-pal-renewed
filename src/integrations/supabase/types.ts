@@ -47,12 +47,39 @@ export type Database = {
         }
         Relationships: []
       }
+      parent_child_links: {
+        Row: {
+          child_user_id: string
+          created_at: string
+          id: string
+          parent_user_id: string
+        }
+        Insert: {
+          child_user_id: string
+          created_at?: string
+          id?: string
+          parent_user_id: string
+        }
+        Update: {
+          child_user_id?: string
+          created_at?: string
+          id?: string
+          parent_user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           created_at: string
           display_name: string | null
           id: string
+          invite_code: string | null
+          metadata: Json
+          onboarded_at: string | null
+          profession: string | null
+          referral_source: string | null
+          role: string | null
           updated_at: string
         }
         Insert: {
@@ -60,6 +87,12 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id: string
+          invite_code?: string | null
+          metadata?: Json
+          onboarded_at?: string | null
+          profession?: string | null
+          referral_source?: string | null
+          role?: string | null
           updated_at?: string
         }
         Update: {
@@ -67,6 +100,12 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          invite_code?: string | null
+          metadata?: Json
+          onboarded_at?: string | null
+          profession?: string | null
+          referral_source?: string | null
+          role?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -76,7 +115,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      find_profile_by_invite_code: {
+        Args: { _code: string }
+        Returns: {
+          display_name: string
+          id: string
+          profession: string
+        }[]
+      }
+      generate_invite_code: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
