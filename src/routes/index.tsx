@@ -103,6 +103,18 @@ function Index() {
     }
     let cancelled = false;
     (async () => {
+      // First, ensure the user has completed onboarding
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("onboarded_at")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      if (!profile?.onboarded_at) {
+        navigate({ to: "/onboarding" });
+        return;
+      }
+
       const { data, error } = await supabase
         .from("habits")
         .select("id, name, detail, schedule, completions")
@@ -128,6 +140,7 @@ function Index() {
       cancelled = true;
     };
   }, [user, authLoading, navigate]);
+
 
 
 
