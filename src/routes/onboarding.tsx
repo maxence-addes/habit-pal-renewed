@@ -253,7 +253,7 @@ function OnboardingPage() {
   const goBack = () => {
     setError(null);
     setInfo(null);
-    setStep((s) => Math.max(1, s - 1));
+    setStep((s) => Math.max(minStep, s - 1));
   };
   const goNext = () => {
     setError(null);
