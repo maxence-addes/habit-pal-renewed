@@ -95,6 +95,8 @@ function Index() {
   const [newDates, setNewDates] = useState<Date[]>([]);
   const [newDueDate, setNewDueDate] = useState<Date | undefined>(undefined);
 
+  const [onboarded, setOnboarded] = useState<boolean | null>(null);
+
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
@@ -103,17 +105,15 @@ function Index() {
     }
     let cancelled = false;
     (async () => {
-      // First, ensure the user has completed onboarding
+      // Check onboarding status (no longer redirects automatically — the
+      // quiz only runs the first time the user enters "élève" mode)
       const { data: profile } = await supabase
         .from("profiles")
         .select("onboarded_at")
         .eq("id", user.id)
         .maybeSingle();
       if (cancelled) return;
-      if (!profile?.onboarded_at) {
-        navigate({ to: "/onboarding" });
-        return;
-      }
+      setOnboarded(Boolean(profile?.onboarded_at));
 
       const { data, error } = await supabase
         .from("habits")
@@ -316,7 +316,14 @@ function Index() {
                 </span>
               </div>
               <button
-                onClick={() => setStudentMode((s) => !s)}
+                onClick={() => {
+                  // First time entering "élève" mode → run the quiz
+                  if (!studentMode && onboarded === false) {
+                    navigate({ to: "/onboarding", search: { role: "student" } });
+                    return;
+                  }
+                  setStudentMode((s) => !s);
+                }}
                 aria-label={studentMode ? "Quitter l'espace élève" : "Passer en espace élève"}
                 className="relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background bg-muted ring-1 ring-border"
               >

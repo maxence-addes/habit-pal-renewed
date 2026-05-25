@@ -6,6 +6,11 @@ import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/onboarding")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    role: (search.role === "student" || search.role === "parent")
+      ? (search.role as "student" | "parent")
+      : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Bienvenue — Daily Rhythms" },
@@ -64,10 +69,12 @@ function generateCodeFallback() {
 function OnboardingPage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { role: presetRole } = Route.useSearch();
 
-  // Wizard state
-  const [step, setStep] = useState(1);
-  const [role, setRole] = useState<Role | null>(null);
+  // Wizard state — if a role was passed in the URL, skip step 1 entirely
+  const [step, setStep] = useState(presetRole ? 2 : 1);
+  const [role, setRole] = useState<Role | null>(presetRole ?? null);
+  const minStep = presetRole ? 2 : 1;
 
   // Student
   const [grade, setGrade] = useState<string>("");
@@ -246,7 +253,7 @@ function OnboardingPage() {
   const goBack = () => {
     setError(null);
     setInfo(null);
-    setStep((s) => Math.max(1, s - 1));
+    setStep((s) => Math.max(minStep, s - 1));
   };
   const goNext = () => {
     setError(null);
@@ -272,7 +279,7 @@ function OnboardingPage() {
         </div>
 
         <div className="bg-card ring-1 ring-border rounded-2xl p-6 transition-all">
-          {step > 1 && (
+          {step > minStep && (
             <button
               onClick={goBack}
               disabled={busy}
